@@ -1,10 +1,13 @@
 pub mod cpu;
 pub mod opcodes;
 pub mod bus;
+pub mod cart;
 
 use bus::Bus;
 use cpu::Mem;
 use cpu::CPU;
+use cart::Rom;
+
 use rand::Rng;
 use sdl2::event::Event;
 use sdl2::EventPump;
@@ -13,6 +16,7 @@ use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
 use std::time::Duration;
 
+//the colors we'll use
 fn color(byte: u8) -> Color {
     match byte {
         0 => sdl2::pixels::Color::BLACK,
@@ -27,6 +31,7 @@ fn color(byte: u8) -> Color {
     }
 }
 
+//read the screen data of whatever frame we are on
 fn read_screen(cpu: &CPU, frame: &mut [u8; 32 * 3 * 32]) -> bool {
     let mut frame_idx = 0;
     let mut update = false;
@@ -44,6 +49,7 @@ fn read_screen(cpu: &CPU, frame: &mut [u8; 32 * 3 * 32]) -> bool {
     update
 }
 
+//handle user input
 fn handle_user_input(cpu: &mut CPU, event_pump: &mut EventPump) {
     for event in event_pump.poll_iter() {
         match event {
@@ -90,7 +96,8 @@ fn main() {
         let mut texture = creator
             .create_texture_target(PixelFormatEnum::RGB24, 32, 32).unwrap();
 
-        let game_code = vec![
+        //our snake game
+        /*let game_code = vec![
             0x20, 0x06, 0x06, 0x20, 0x38, 0x06, 0x20, 0x0d, 0x06, 0x20, 0x2a, 0x06, 0x60, 0xa9, 0x02,
             0x85, 0x02, 0xa9, 0x04, 0x85, 0x03, 0xa9, 0x11, 0x85, 0x10, 0xa9, 0x10, 0x85, 0x12, 0xa9,
             0x0f, 0x85, 0x14, 0xa9, 0x04, 0x85, 0x11, 0x85, 0x13, 0x85, 0x15, 0x60, 0xa5, 0xfe, 0x85,
@@ -112,14 +119,19 @@ fn main() {
             0x10, 0x29, 0x1f, 0xc9, 0x1f, 0xf0, 0x01, 0x60, 0x4c, 0x35, 0x07, 0xa0, 0x00, 0xa5, 0xfe,
             0x91, 0x00, 0x60, 0xa6, 0x03, 0xa9, 0x00, 0x81, 0x10, 0xa2, 0x00, 0xa9, 0x01, 0x81, 0x10,
             0x60, 0xa6, 0xff, 0xea, 0xea, 0xca, 0xd0, 0xfb, 0x60,
-            ];          
+            ];    */      
 
     //load the game
-    let bus = Bus::new();
+
+    //load the game
+    let bytes: Vec<u8> = std::fs::read("snake.nes").unwrap();
+    let rom = Rom::new(&bytes).unwrap();
+
+    let bus = Bus::new(rom);
     let mut cpu = CPU::new(bus);
-    cpu.load(game_code);
+    //cpu.load(game_code);
     cpu.reset();
-    cpu.pc = 0x0600;
+    //cpu.pc = 0x0600;
 
     let mut screen_state = [0 as u8; 32 * 3 * 32];
     let mut rng = rand::thread_rng();

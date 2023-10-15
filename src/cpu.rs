@@ -157,6 +157,7 @@ impl CPU {
 
     }
 
+    //helper functions
     pub fn reset(&mut self) {
         self.register_a = 0;
         self.register_x = 0;
@@ -185,8 +186,10 @@ impl CPU {
         }
         self.mem_write_u16(0xFFFC, 0x0600);
 
-        
+
     }
+
+    //these are all the opcode functions 
 
     fn lda(&mut self, mode: &AddressingMode) {
         let addr = self.get_op_address(&mode);
@@ -550,6 +553,7 @@ impl CPU {
         self.execute_with_callback(|_| {});
     }
 
+    //execute the opcodes are return the callback
     pub fn execute_with_callback<F>(&mut self, mut callback: F)
     where
         F: FnMut(&mut CPU),
