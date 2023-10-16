@@ -2,6 +2,7 @@ pub mod cpu;
 pub mod opcodes;
 pub mod bus;
 pub mod cart;
+pub mod ppu;
 
 use bus::Bus;
 use cpu::Mem;
@@ -32,7 +33,7 @@ fn color(byte: u8) -> Color {
 }
 
 //read the screen data of whatever frame we are on
-fn read_screen(cpu: &CPU, frame: &mut [u8; 32 * 3 * 32]) -> bool {
+fn read_screen(cpu: &mut CPU, frame: &mut [u8; 32 * 3 * 32]) -> bool {
     let mut frame_idx = 0;
     let mut update = false;
     for i in 0x0200..0x600 {
