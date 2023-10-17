@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use crate::opcodes;
 use crate::bus::Bus;
 
-pub struct CPU {
+pub struct CPU<'a> {
     pub register_a: u8,
     pub register_x: u8,
     pub register_y: u8,
@@ -12,7 +12,7 @@ pub struct CPU {
     stack_pointer: u8,
     pub pc: u16,
     //memory: [u8; 0xFFFF],
-    pub bus: Bus,
+    pub bus: Bus<'a>,
 }
 
 bitflags! {
@@ -80,7 +80,7 @@ fn page_cross(addr1: u16, addr2 : u16) -> bool {
 }
 
 
-impl Mem for CPU {
+impl Mem for CPU<'_> {
     
     fn mem_read(&mut self, addr: u16) -> u8 { 
         self.bus.mem_read(addr)
@@ -113,8 +113,8 @@ mod interrupt {
 }
 
 
-impl CPU {
-    pub fn new(bus:Bus) -> Self{
+impl<'a> CPU<'a> {
+    pub fn new<'b>(bus:Bus<'b>) -> CPU<'b>{
         CPU {
             register_a: 0,
             register_x: 0,

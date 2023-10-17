@@ -1,5 +1,5 @@
 pub mod bus;
-pub mod cartridge;
+pub mod cart;
 pub mod cpu;
 pub mod opcodes;
 pub mod trace;
@@ -7,18 +7,20 @@ pub mod ppu;
 pub mod render;
 
 use bus::Bus;
-use cartridge::Rom;
+use cart::Rom;
 use cpu::Mem;
 use cpu::CPU;
 use trace::trace;
 use render::frame::Frame;
 use render::palette;
+// use rand::Rng;
 
 use sdl2::event::Event;
 use sdl2::keyboard::Keycode;
 use sdl2::pixels::Color;
 use sdl2::pixels::PixelFormatEnum;
 use sdl2::EventPump;
+// use std::time::Duration;
 
 #[macro_use]
 extern crate lazy_static;
@@ -55,6 +57,7 @@ fn show_tile(chr_rom: &Vec<u8>, bank: usize, tile_n: usize) ->Frame {
 
     frame
 }
+
 
 fn show_tile_bank(chr_rom: &Vec<u8>, bank: usize) ->Frame {
     assert!(bank <= 1);
@@ -95,6 +98,7 @@ fn show_tile_bank(chr_rom: &Vec<u8>, bank: usize) ->Frame {
     frame
 }
 
+
 fn main() {
     // init sdl2
     let sdl_context = sdl2::init().unwrap();
@@ -115,7 +119,7 @@ fn main() {
         .unwrap();
 
     //load the game
-    let bytes: Vec<u8> = std::fs::read("Pac-Man.nes").unwrap();
+    let bytes: Vec<u8> = std::fs::read("snake.nes").unwrap();
     let rom = Rom::new(&bytes).unwrap();
 
     let right_bank = show_tile_bank(&rom.chr_rom, 1);
